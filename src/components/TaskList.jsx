@@ -2,17 +2,25 @@ import React, { useState } from 'react'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import UpdatePopup from './UpdatePopup';
+import { removeTaskFromList } from '../slices/taskSlice';
+import { useSelector, useDispatch } from 'react-redux'
+import { setSelectedTask } from '../slices/taskSlice';
 
 const TaskList = () => {
 
-    const [modalShow, setModalShow] = useState(false);
+    const {taskList} = useSelector((state) => state.tasks)
 
-    const updateTask = () => {
-        setModalShow(true)
+    const [modalShow, setModalShow] = useState(false);
+    const dispatch = useDispatch();
+
+    const updateTask = (task) => {
+        setModalShow(true);
+        dispatch(setSelectedTask(task));
     }
 
-    const deleteTask = () => {
+    const deleteTask = (task) => {
         console.log("Task Deleted")
+        dispatch(removeTaskFromList(task))
     }
 
 
@@ -28,15 +36,22 @@ const TaskList = () => {
                 </tr>
             </thead>
             <tbody className='text-center'>
-                <tr>
-                <td>1</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td className='gap-2'>
-                <Button variant="primary" className='mx-3' onClick={() => updateTask()}><i className="bi bi-pencil"></i></Button> 
-                <Button variant="primary" onClick={() => deleteTask()}><i className="bi bi-trash3"></i></Button>   
-                </td>
-                </tr>
+                {
+                   taskList && taskList.map((task, index) => {
+                    return (
+                        <tr key={task.id}>
+                            <td>{index + 1}</td>
+                            <td>{task.title}</td>
+                            <td>{task.description}</td>
+                            <td className='gap-2'>
+                            <Button variant="primary" className='mx-3' onClick={() => updateTask(task)}><i className="bi bi-pencil"></i></Button> 
+                            <Button variant="primary" onClick={() => deleteTask(task)}><i className="bi bi-trash3"></i></Button>   
+                            </td>
+                        </tr>
+                    )
+                   })
+                }
+                
             </tbody>
         </Table>
         <UpdatePopup 

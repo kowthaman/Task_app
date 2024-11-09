@@ -1,17 +1,32 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import { useSelector } from 'react-redux';
+import { updateTaskFromList } from '../slices/taskSlice';
+import { useDispatch } from 'react-redux';
 
 const UpdatePopup = (props) => {
 
+  const {selectedTask} = useSelector((state) => state.tasks);
+  const dispatch = useDispatch();
+
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [id, setId] = useState("");
 
     const updateTask = (e) => {
-        props.onHide();
+      dispatch(updateTaskFromList({id,title,description}))
+      props.onHide();
     }
 
+    useEffect(() => {
+      if(Object.keys(selectedTask).length !== 0) { 
+        setTitle(selectedTask.title);
+        setDescription(selectedTask.description);
+        setId(selectedTask.id);
+      }
+    }, [selectedTask])
 
   return (
     <Modal
